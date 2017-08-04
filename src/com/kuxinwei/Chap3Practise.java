@@ -1,29 +1,28 @@
 package com.kuxinwei;
 
-import com.sun.glass.ui.SystemClipboard;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.Stream;
 
-import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
 
 /**
+ * Chap3
  * Created by n3072 on 2017/8/4.
  */
-public class Practise {
+public class Chap3Practise {
 
     public static void main(String[] args) {
-//        System.out.println(addUp(createIntList(10)));
-//        System.out.println(getName(Artist.createList(10)));
-//        System.out.println(getMemberCount(Artist.createList(5)));
-//        System.out.println(charInString("abcdeABCDE"));
+        System.out.println(addUp(createIntList(10)));
+        System.out.println(getName(Artist.createList(10)));
+        System.out.println(getMemberCount(Artist.createList(5)));
+        System.out.println(charInString("abcdeABCDE"));
         System.out.println(lessLittleChar(Arrays.asList("abcdefg", "ABCDEF", "AbCDde")));
-        System.out.println(lessLittleChar(Arrays.asList()));
+        System.out.println(lessLittleChar(Collections.emptyList()));
+        List<Artist> artists = Artist.createList(10);
+        System.out.println(collectNameByMap(artists));
+        System.out.println(collectNameByReduce(artists));
+        System.out.println(filterArtistByFilter(artists));
+        System.out.println(filterArtistByReduce(artists));
     }
 
     private static List<Integer> createIntList(int size) {
@@ -39,12 +38,12 @@ public class Practise {
     }
 
     public static List<String> getName(List<Artist> artists) {
-        return artists.stream().map(artist -> artist.country).collect(Collectors.toList());
+        return artists.stream().map(artist -> artist.country).collect(toList());
     }
 
     // 2 迭代
     public static int getMemberCount(List<Artist> artists) {
-        return (int) artists.stream().flatMap(Artist::getMembers).limit(10).count();
+        return (int) artists.stream().flatMap(Artist::getMembers).count();
     }
 
     // 3 a 求值， b 惰性求值
@@ -72,8 +71,34 @@ public class Practise {
 
     // 10 进阶练习
     // 1 只用 reduce 和 Lambda 表达式实现 map，返回是 stream 或者 list
-//    public static Stream<Integer> sum(List<Integer> integers) {
-//    }
+
+    public static List<String> collectNameByMap(List<Artist> artists) {
+        return artists.stream().map(artist -> artist.name).collect(toList());
+    }
+
+    public static List<String> collectNameByReduce(List<Artist> artistList) {
+        return artistList.stream().reduce(new ArrayList<>(), (strings, artist) -> {
+            strings.add(artist.name);
+            return strings;
+        }, (string, string2) -> {
+            System.out.println("reduce equal:" + (string == string2)); // 根本没有打出这句 log
+            return string;
+        });
+    }
+
+    public static List<Artist> filterArtistByFilter(List<Artist> artists) {
+        return artists.stream().filter(artist -> artist.name.contains("2")).collect(toList());
+    }
+
+    public static List<Artist> filterArtistByReduce(List<Artist> artistList) {
+        return artistList.stream().reduce(new ArrayList<>(), (artists, artist) -> {
+            if (artist.name.contains("2")) {
+                artists.add(artist);
+            }
+            return artists;
+        }, ((artists, artists2) -> artists));
+    }
+
     public static class Artist {
         public static int count = 0;
         public String name;
@@ -102,7 +127,7 @@ public class Practise {
 
         @Override
         public String toString() {
-            return "artist " + count;
+            return "artist " + hashCode();
         }
 
         public static List<Artist> createList(int size, boolean member) {
