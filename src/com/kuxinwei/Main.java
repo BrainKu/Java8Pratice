@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
 
@@ -21,6 +23,19 @@ public class Main {
         }
     }
 
+
+    public void testFunctionMethod() {
+        Thread thread = new Thread();
+    }
+
+    public void runAction(Callable runnable) {
+    }
+
+    public boolean isPrime(int value) {
+        return IntStream.range(2, value).allMatch(x -> x%value != 0);
+    }
+
+    ThreadLocal<String> mThreadLocal = ThreadLocal.withInitial(() -> "ABCDEFG");
 
     public static class Album {
         static Random random = new Random();
