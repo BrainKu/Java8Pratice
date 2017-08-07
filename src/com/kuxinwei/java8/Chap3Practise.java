@@ -1,4 +1,4 @@
-package com.kuxinwei;
+package com.kuxinwei.java8;
 
 import java.util.*;
 import java.util.stream.Stream;

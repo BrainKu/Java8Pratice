@@ -1,4 +1,4 @@
-package com.kuxinwei;
+package com.kuxinwei.java8;
 
 import java.util.ArrayList;
 import java.util.List;
