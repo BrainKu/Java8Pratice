@@ -1,10 +1,11 @@
 package com.kuxinwei.rx;
 
 import rx.Observable;
-import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -14,7 +15,8 @@ public class Chap2 {
 
     public static void main(String[] args) {
         System.out.println("hello world");
-        testTimer();
+//        testTimer();
+        waitByWordLength();
     }
 
     static void testTimer() {
@@ -41,5 +43,33 @@ public class Chap2 {
                     subscriber.add(Subscriptions.create(thread::interrupt));
                 }
         );
+    }
+
+    static void waitByWordLength() {
+//        Observable.just("ab", "asdfasdf", "a", "asdfa")
+//                .delay(word -> Observable.timer(word.length(), TimeUnit.SECONDS))
+//                .subscribe(System.out::println);
+        // use flapMap + timer implement delay
+        Observable.just("ab", "asdfasdf", "a", "asdfa").flatMap((Func1<String, Observable<?>>) word -> Observable.timer(word.length(), TimeUnit.SECONDS).map(x -> word)
+        ).subscribe(System.out::println);
+
+        try {
+            TimeUnit.SECONDS.sleep(15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    static class User {
+        Observable<User> loadProfile() {
+            return null;
+        }
+    }
+
+    List<User> sLargeUsers = new ArrayList<>();
+
+    void testLoadProfile() {
+        Observable.from(sLargeUsers).flatMap((Func1<User, Observable<?>>) User::loadProfile, 10);
     }
 }
