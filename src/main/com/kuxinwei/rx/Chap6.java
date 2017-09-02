@@ -1,6 +1,7 @@
 package com.kuxinwei.rx;
 
 import rx.Observable;
+import rx.observables.ConnectableObservable;
 
 import java.util.List;
 import java.util.Random;
@@ -9,11 +10,33 @@ import java.util.stream.Collectors;
 
 public class Chap6 {
 
+    private final int i = 1;
+
     public static void main(String[] args) throws InterruptedException {
 //        simpleBuffer();
 //        bufferSkipMoreCount();
-        bufferByTime();
+//        bufferByTime();
 //        movingAverage();
+        debounceTimeout();
+        TimeUnit.SECONDS.sleep(10);
+    }
+
+    /**
+     * 如果设置 interval 为 99，debounce 为 100，原理上是不可能有事件的，但确实是发生了。90 的话就一定不会。
+     */
+    private static void debounceTimeout() {
+        ConnectableObservable<Long> upstream = Observable.interval(90, TimeUnit.MILLISECONDS)
+                .publish();
+        upstream.debounce(100, TimeUnit.MILLISECONDS)
+                .timeout(1, TimeUnit.SECONDS, upstream.take(1)).subscribe(System.out::println);
+        upstream.connect();
+//        Observable.interval(90, TimeUnit.MILLISECONDS)
+//                .debounce(100, TimeUnit.MILLISECONDS)
+//                .timeout(1, TimeUnit.SECONDS)
+//                .subscribe(
+//                        System.out::println,
+//                        System.out::println
+//                );
     }
 
     private static void bufferByTime() throws InterruptedException {
